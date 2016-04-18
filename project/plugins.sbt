@@ -1,0 +1,7 @@
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.6"
+libraryDependencies <+= sbtVersion(v => "org.scala-sbt" % "scripted-plugin" % v)
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.8.5")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "1.1")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")

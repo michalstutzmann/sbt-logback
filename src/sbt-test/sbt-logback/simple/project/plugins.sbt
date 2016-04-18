@@ -1,0 +1,1 @@
+addSbtPlugin("com.github.mwegrz" %% "sbt-logback" % System.getProperty("plugin.version"))
