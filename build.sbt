@@ -41,7 +41,6 @@ lazy val root = (project in file(".")).
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     // Publish settings
     crossPaths := false,
-    autoScalaLibrary := false,
     publishTo := Some(
       if (isSnapshot.value)
         Opts.resolver.sonatypeSnapshots
