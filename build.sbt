@@ -22,7 +22,7 @@ lazy val root = (project in file(".")).
     releaseTagName := { (version in ThisBuild).value },
     releaseTagComment := s"Release version ${(version in ThisBuild).value}",
     releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}",
-    releaseCrossBuild := true, // true if you cross-build the project for multiple Scala versions
+    releaseCrossBuild := false,
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
