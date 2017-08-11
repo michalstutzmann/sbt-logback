@@ -1,11 +1,12 @@
+import ReleaseTransformations._
+
 lazy val root = (project in file(".")).
   settings(ScriptedPlugin.scriptedSettings: _*).
-  enablePlugins(GitBranchPrompt, ReleasePlugin, SbtScalariform, SbtPgp).
+  enablePlugins(ReleasePlugin, ScalafmtPlugin).
   settings(
     sbtPlugin := true,
     name := "sbt-logback",
     organization := "com.github.mwegrz",
-    scalaVersion := "2.10.6",
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
@@ -17,39 +18,53 @@ lazy val root = (project in file(".")).
       "-Djava.io.tmpdir=" + target.value
     ),
     scriptedBufferLog := false,
-    // Publishing
-    publishMavenStyle := true,
-    crossPaths := true,
+    // Release settings
+    releaseTagName := { (version in ThisBuild).value },
+    releaseTagComment := s"Release version ${(version in ThisBuild).value}",
+    releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}",
+    releaseCrossBuild := true, // true if you cross-build the project for multiple Scala versions
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      releaseStepCommandAndRemaining("publishSigned"),
+      setNextVersion,
+      commitNextVersion,
+      releaseStepCommandAndRemaining("sonatypeReleaseAll"),
+      pushChanges
+    ),
+    useGpg := true,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    // Publish settings
+    crossPaths := false,
     autoScalaLibrary := false,
-    publishTo := {
-      val nexus = "https://oss.sonatype.org/"
+    publishTo := Some(
       if (isSnapshot.value)
-        Some("snapshots" at nexus + "content/repositories/snapshots")
+        Opts.resolver.sonatypeSnapshots
       else
-        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-    },
+        Opts.resolver.sonatypeStaging
+    ),
+    publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
-    pomExtra := (
-      <url>http://github.com/mwegrz/sbt-logback</url>
-        <licenses>
-          <license>
-            <name>MIT</name>
-            <url>https://opensource.org/licenses/MIT</url>
-            <distribution>repo</distribution>
-          </license>
-        </licenses>
-        <scm>
-          <url>git@github.com:mwegrz/sbt-logback.git</url>
-          <connection>scm:git:git@github.com:mwegrz/sbt-logback.git</connection>
-        </scm>
-        <developers>
-          <developer>
-            <id>mwegrz</id>
-            <name>Michał Węgrzyn</name>
-            <url>http://github.com/mwegrz</url>
-          </developer>
-        </developers>),
-    releaseTagComment := s"Released ${(version in ThisBuild).value}",
-    releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}"
+    licenses := Seq("Apache License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+    homepage := Some(url("http://github.com/mwegrz/sbt-logback")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/mwegrz/sbt-logback.git"),
+        "scm:git@github.com:mwegrz/sbt-logback.git"
+      )
+    ),
+    developers := List(
+      Developer(
+        id = "mwegrz",
+        name = "Michał Węgrzyn",
+        email = null,
+        url = url("http://github.com/mwegrz")
+      )
+    )
   )
