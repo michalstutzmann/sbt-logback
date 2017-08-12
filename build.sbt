@@ -4,7 +4,6 @@ lazy val root = (project in file(".")).
   settings(ScriptedPlugin.scriptedSettings: _*).
   enablePlugins(ReleasePlugin, ScalafmtPlugin).
   settings(
-    sbtPlugin := true,
     name := "sbt-logback",
     organization := "com.github.mwegrz",
     scalacOptions ++= Seq(
@@ -13,6 +12,8 @@ lazy val root = (project in file(".")).
       "-deprecation",
       "-unchecked"
     ),
+    sbtPlugin := true,
+    crossSbtVersions := Vector("0.13.16", "1.0.0"),
     scriptedLaunchOpts ++= Seq(
       "-Dplugin.version=" + (version in ThisBuild).value,
       "-Djava.io.tmpdir=" + target.value
@@ -50,7 +51,7 @@ lazy val root = (project in file(".")).
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
-    licenses := Seq("Apache License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+    licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
     homepage := Some(url("http://github.com/mwegrz/sbt-logback")),
     scmInfo := Some(
       ScmInfo(
