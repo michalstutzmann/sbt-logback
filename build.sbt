@@ -1,7 +1,6 @@
 import ReleaseTransformations._
 
 lazy val root = (project in file(".")).
-  settings(ScriptedPlugin.scriptedSettings: _*).
   enablePlugins(ReleasePlugin, ScalafmtPlugin).
   settings(
     name := "sbt-logback",
@@ -13,12 +12,12 @@ lazy val root = (project in file(".")).
       "-unchecked"
     ),
     sbtPlugin := true,
-    crossSbtVersions := Vector("0.13.16", "1.0.0"),
-    scriptedLaunchOpts ++= Seq(
-      "-Dplugin.version=" + (version in ThisBuild).value,
-      "-Djava.io.tmpdir=" + target.value
-    ),
-    scriptedBufferLog := false,
+    scalaVersion := "2.12.3",
+    sbtVersion in Global := "1.0.0",
+    scalaCompilerBridgeSource := {
+      val sv = appConfiguration.value.provider.id.version
+      ("org.scala-sbt" % "compiler-interface" % sv % "component").sources
+    },
     // Release settings
     releaseTagName := { (version in ThisBuild).value },
     releaseTagComment := s"Release version ${(version in ThisBuild).value}",
