@@ -14,10 +14,6 @@ lazy val root = (project in file(".")).
     sbtPlugin := true,
     scalaVersion := "2.12.4",
     sbtVersion in Global := "1.0.4",
-    scalaCompilerBridgeSource := {
-      val sv = appConfiguration.value.provider.id.version
-      ("org.scala-sbt" % "compiler-interface" % sv % "component").sources
-    },
     // Release settings
     releaseTagName := { (version in ThisBuild).value },
     releaseTagComment := s"Release version ${(version in ThisBuild).value}",
