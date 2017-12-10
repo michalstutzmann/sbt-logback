@@ -13,12 +13,10 @@ lazy val root = (project in file(".")).
     ),
     sbtPlugin := true,
     scalaVersion := "2.12.4",
-    sbtVersion in Global := "1.0.4",
     // Release settings
     releaseTagName := { (version in ThisBuild).value },
     releaseTagComment := s"Release version ${(version in ThisBuild).value}",
     releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}",
-    releaseCrossBuild := false,
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
@@ -35,7 +33,6 @@ lazy val root = (project in file(".")).
     ),
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     // Publish settings
-    crossPaths := false,
     publishTo := Some(
       if (isSnapshot.value)
         Opts.resolver.sonatypeSnapshots
