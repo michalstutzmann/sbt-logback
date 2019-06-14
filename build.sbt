@@ -12,7 +12,8 @@ lazy val root = (project in file(".")).
       "-unchecked"
     ),
     sbtPlugin := true,
-    scalaVersion := "2.12.4",
+    scalaVersion := "2.12.8",
+    scalafmtOnCompile := true,
     // Release settings
     releaseTagName := { (version in ThisBuild).value },
     releaseTagComment := s"Release version ${(version in ThisBuild).value}",

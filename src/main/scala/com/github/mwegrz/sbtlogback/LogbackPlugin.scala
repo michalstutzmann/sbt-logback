@@ -5,8 +5,8 @@ import sbt._
 import scala.language.implicitConversions
 
 /**
- * Cleans up `libraryDependencies` from all logging libraries (except SLF4J) and adds SLF4J bridging and Logback
- */
+  * Cleans up `libraryDependencies` from all logging libraries (except SLF4J) and adds SLF4J bridging and Logback
+  */
 object LogbackPlugin extends AutoPlugin {
   object autoImport {
     lazy val slf4jVersion = settingKey[String]("SLF4J version")
