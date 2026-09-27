@@ -20,7 +20,7 @@ create_github_release() {
 
 publish() {
     local -r version="$1"
-    sbt "set version := \"$version\"; +scripted; +publishSigned; sonaUpload" || return 1
+    sbt "set version := \"$version\"; +scripted; +publishSigned; sonaRelease" || return 1
 }
 
 main() {
