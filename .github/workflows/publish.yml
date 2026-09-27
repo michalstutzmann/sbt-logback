@@ -1,0 +1,55 @@
+---
+name: Publish
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
+permissions:
+  contents: write
+  packages: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.ref }}
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+        with:
+          sbt-runner-version: 2.0.9
+      - name: Cache Ivy2
+        uses: actions/cache@v4
+        with:
+          path: ~/.ivy2
+          key: ivy2
+          restore-keys: ivy2
+      - name: Cache Coursier
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/coursier
+          key: coursier
+          restore-keys: coursier
+      - name: Set up Git SemVer Release
+        uses: michalstutzmann/setup-git-semver-release@v2.0.1
+      - name: Import PGP key
+        env:
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+        run: echo "$PGP_SECRET" | base64 --decode | gpg --batch --import
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          SONATYPE_CENTRAL_USERNAME: ${{ secrets.SONATYPE_CENTRAL_USERNAME }}
+          SONATYPE_CENTRAL_PASSWORD: ${{ secrets.SONATYPE_CENTRAL_PASSWORD }}
+        run: ./publish

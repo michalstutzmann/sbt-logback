@@ -1,62 +1,54 @@
-import ReleaseTransformations._
-
-lazy val root = (project in file(".")).
-  enablePlugins(ReleasePlugin, ScalafmtPlugin).
-  settings(
+lazy val root = (project in file("."))
+  .enablePlugins(SbtPlugin, ScalafmtPlugin)
+  .settings(
     name := "sbt-logback",
     organization := "com.github.mwegrz",
+    versionScheme := Some("early-semver"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.21"),
+    pluginCrossBuild / sbtVersion := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.5.8"
+        case _      => (pluginCrossBuild / sbtVersion).value
+      }
+    },
+    scriptedSbt := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.13.0"
+        case _      => scriptedSbt.value
+      }
+    },
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
       "-deprecation",
       "-unchecked"
     ),
-    sbtPlugin := true,
-    scalaVersion := "2.12.8",
     scalafmtOnCompile := true,
-    // Release settings
-    releaseTagName := { (version in ThisBuild).value },
-    releaseTagComment := s"Release version ${(version in ThisBuild).value}",
-    releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}",
-    releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      runClean,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      releaseStepCommandAndRemaining("publishSigned"),
-      setNextVersion,
-      commitNextVersion,
-      releaseStepCommandAndRemaining("sonatypeReleaseAll"),
-      pushChanges
-    ),
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    scriptedLaunchOpts ++= Seq("-Dplugin.version=" + version.value),
+    scriptedBufferLog := false,
     // Publish settings
-    publishTo := Some(
-      if (isSnapshot.value)
-        Opts.resolver.sonatypeSnapshots
-      else
-        Opts.resolver.sonatypeStaging
-    ),
+    publishTo := localStaging.value,
+    credentials ++= (for {
+      username <- sys.env.get("SONATYPE_CENTRAL_USERNAME")
+      password <- sys.env.get("SONATYPE_CENTRAL_PASSWORD")
+    } yield Credentials("Sonatype Nexus Repository Manager", "central.sonatype.com", username, password)).toSeq,
     publishMavenStyle := true,
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     pomIncludeRepository := { _ => false },
-    licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
-    homepage := Some(url("http://github.com/mwegrz/sbt-logback")),
+    licenses := Seq("Apache License, Version 2.0" -> uri("https://www.apache.org/licenses/LICENSE-2.0.html")),
+    homepage := Some(uri("https://github.com/michalstutzmann/sbt-logback")),
     scmInfo := Some(
       ScmInfo(
-        url("https://github.com/mwegrz/sbt-logback.git"),
-        "scm:git@github.com:mwegrz/sbt-logback.git"
+        uri("https://github.com/michalstutzmann/sbt-logback.git"),
+        "scm:git:git@github.com:michalstutzmann/sbt-logback.git"
       )
     ),
     developers := List(
       Developer(
-        id = "mwegrz",
-        name = "Michał Węgrzyn",
+        id = "michalstutzmann",
+        name = "Michal Stutzmann",
         email = null,
-        url = url("http://github.com/mwegrz")
+        url = uri("https://github.com/michalstutzmann")
       )
     )
   )
