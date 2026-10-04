@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 is_detached_head() {
-    ! git symbolic-ref --quiet HEAD >/dev/null || return 1
+    ! git symbolic-ref --quiet HEAD >/dev/null
 }
 
 create_github_release() {
@@ -20,6 +20,7 @@ create_github_release() {
 
 publish() {
     local -r version="$1"
+
     sbt "set version := \"$version\"; +scripted; +publishSigned; sonaRelease" || return 1
 }
 
@@ -39,8 +40,8 @@ main() {
     release_tag="$(git-semver-release release-tag)" || return 4
 
     if is_detached_head && [[ -n $release_tag ]]; then
-        publish "$version" || return 6
-        create_github_release "$version" "$release_tag" || return 5
+        publish "$version" || return 5
+        create_github_release "$version" "$release_tag" || return 6
     else
         sbt +scripted || return 7
     fi
